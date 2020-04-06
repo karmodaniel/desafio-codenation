@@ -1,6 +1,4 @@
 const axios =  require('axios').default;
-const express = require('express')
-const app = express()
 const fs = require('fs');
 const sha1 = require('js-sha1')
 const formData = require('form-data')
@@ -27,7 +25,7 @@ function writeFile(challenge) {
 
 }
 
-function decifrar() {
+function decrypt() {
     fs.readFile(__dirname + '/answer.json','utf-8',(err, data) => {
         challenge = JSON.parse(data)
         const {cifrado} = challenge
@@ -54,24 +52,27 @@ function decifrar() {
     })
 
 }
-app.get('/resposta', (req, res) => {
+
+function sendAnswer() {
     const uri = "https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=e241462c5ac6569cf07336f3a0dd60c54a955709";
 
         const form = new formData();
+        
         form.append('answer', fs.createReadStream('./answer.json'));
+        
         let options = form.getHeaders()
         options.method = 'POST';
-        res.send(form)
-        console.log(options)
+
         axios.post(uri, form, { headers: options }).then(data => {
             console.log(data);
         }).catch(err => {
             console.log(err)
         });
-})
 
-app.listen(3000);
+}
+
 
 
 //getChallenge()
-//decifrar()
+//decrypt()
+sendAnswer()
